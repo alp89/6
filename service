@@ -1,0 +1,5 @@
+# PATH - /usr/sbin/test
+
+#!/bin/bash
+
+grep $1 $2
