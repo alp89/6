@@ -1,0 +1,12 @@
+[Unit]
+Description=Spawn-fcgi
+After=network.target syslog.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+EnvironmentFile=/etc/sysconfig/spawn-fcgi
+ExecStart=/usr/bin/spawn-fcgi $OPTIONS
+ExecStop=/bin/kill -WINCH ${MAINPID}
+
+[Install]
+WantedBy=multi-user.target
