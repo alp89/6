@@ -1,0 +1,11 @@
+[Unit]
+Description=Service for find text in log file
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/sysconfig/test
+ExecStart=/usr/sbin/test $WORD $PATH_FILE
+
+[Install]
+WantedBy=multi-user.target
