@@ -1,0 +1,44 @@
+$ systemctl status spawn-fcgi.service 
+● spawn-fcgi.service - Spawn-fcgi
+   Loaded: loaded (/etc/systemd/system/multi-user.target.wants/spawn-fcgi.service; bad; vendor preset: disabled)
+   Active: active (running) since Sat 2018-08-18 13:57:56 UTC; 3s ago
+  Process: 7728 ExecStart=/usr/bin/spawn-fcgi $OPTIONS (code=exited, status=0/SUCCESS)
+ Main PID: 7729 (php-cgi)
+   CGroup: /system.slice/spawn-fcgi.service
+           ├─7729 /usr/bin/php-cgi
+           ├─7730 /usr/bin/php-cgi
+           ├─7731 /usr/bin/php-cgi
+           ├─7732 /usr/bin/php-cgi
+           ├─7733 /usr/bin/php-cgi
+           ├─7734 /usr/bin/php-cgi
+           ├─7735 /usr/bin/php-cgi
+           ├─7736 /usr/bin/php-cgi
+           ├─7737 /usr/bin/php-cgi
+           ├─7738 /usr/bin/php-cgi
+           ├─7739 /usr/bin/php-cgi
+           ├─7740 /usr/bin/php-cgi
+           ├─7741 /usr/bin/php-cgi
+           ├─7742 /usr/bin/php-cgi
+           ├─7743 /usr/bin/php-cgi
+           ├─7744 /usr/bin/php-cgi
+           ├─7745 /usr/bin/php-cgi
+           ├─7746 /usr/bin/php-cgi
+           ├─7747 /usr/bin/php-cgi
+           ├─7748 /usr/bin/php-cgi
+           ├─7749 /usr/bin/php-cgi
+           ├─7750 /usr/bin/php-cgi
+           ├─7751 /usr/bin/php-cgi
+           ├─7752 /usr/bin/php-cgi
+           ├─7753 /usr/bin/php-cgi
+           ├─7754 /usr/bin/php-cgi
+           ├─7755 /usr/bin/php-cgi
+           ├─7756 /usr/bin/php-cgi
+           ├─7757 /usr/bin/php-cgi
+           ├─7758 /usr/bin/php-cgi
+           ├─7759 /usr/bin/php-cgi
+           ├─7760 /usr/bin/php-cgi
+           └─7761 /usr/bin/php-cgi
+
+Aug 18 13:57:56 otuslinux systemd[1]: Starting Spawn-fcgi...
+Aug 18 13:57:56 otuslinux spawn-fcgi[7728]: spawn-fcgi: child spawned successfully: PID: 7729
+Aug 18 13:57:56 otuslinux systemd[1]: Started Spawn-fcgi.
