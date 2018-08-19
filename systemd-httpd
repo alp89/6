@@ -1,0 +1,142 @@
+1. Для запуска двух instance необходимо поправить имя службы httpd.service => httpd@.service
+
+2. Создать второй конфиг для второго instance (имя pidfile указал во втором конфиге httpd2.conf)
+
+3. Добавить разные конфиги в /etc/sysconfig/
+
+В моем случае вышло так:
+
+-----/etc/sysconfig/httpd-----
+
+#
+# This file can be used to set additional environment variables for
+# the httpd process, or pass additional options to the httpd
+# executable.
+#
+# Note: With previous versions of httpd, the MPM could be changed by
+# editing an "HTTPD" variable here.  With the current version, that
+# variable is now ignored.  The MPM is a loadable module, and the
+# choice of MPM can be changed by editing the configuration file
+# /etc/httpd/conf.modules.d/00-mpm.conf.
+# 
+
+#
+# To pass additional options (for instance, -D definitions) to the
+# httpd binary at startup, set OPTIONS here.
+#
+OPTIONS=-f /etc/httpd/conf/httpd.conf
+
+#
+# This setting ensures the httpd process is started in the "C" locale
+# by default.  (Some modules will not behave correctly if
+# case-sensitive string comparisons are performed in a different
+# locale.)
+#
+LANG=C
+
+
+----/etc/sysconfig/httpd2----
+#
+# This file can be used to set additional environment variables for
+# the httpd process, or pass additional options to the httpd
+# executable.
+#
+# Note: With previous versions of httpd, the MPM could be changed by
+# editing an "HTTPD" variable here.  With the current version, that
+# variable is now ignored.  The MPM is a loadable module, and the
+# choice of MPM can be changed by editing the configuration file
+# /etc/httpd/conf.modules.d/00-mpm.conf.
+# 
+
+#
+# To pass additional options (for instance, -D definitions) to the
+# httpd binary at startup, set OPTIONS here.
+#
+OPTIONS=-f /etc/httpd/conf/httpd2.conf
+
+#
+# This setting ensures the httpd process is started in the "C" locale
+# by default.  (Some modules will not behave correctly if
+# case-sensitive string comparisons are performed in a different
+# locale.)
+#
+LANG=C
+
+4. Поправить httpd@.service:
+
+[Unit]
+Description=The Apache HTTP Server %I
+After=network.target remote-fs.target nss-lookup.target
+Documentation=man:httpd(8)
+Documentation=man:apachectl(8)
+
+[Service]
+TYPE=notify
+EnvironmentFile=/etc/sysconfig/%i
+ExecStart=/usr/sbin/httpd $OPTIONS -DFOREGROUND
+ExecReload=/usr/sbin/httpd $OPTIONS -k graceful
+ExecStop=/bin/kill -WINCH ${MAINPID}
+# We want systemd to give httpd some time to finish gracefully, but still want
+# it to kill httpd after TimeoutStopSec if something went wrong during the
+# graceful stop. Normally, Systemd sends SIGTERM signal right after the
+# ExecStop, which would kill httpd. We are sending useless SIGCONT here to give
+# httpd time to finish.
+KillSignal=SIGCONT
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+
+5. Сделать systemct enable httpd@httpd.service && systemct enable httpd@httpd2.service
+
+6. Запустить:
+ ● httpd@httpd.service - The Apache HTTP Server httpd
+   Loaded: loaded (/usr/lib/systemd/system/httpd@.service; enabled; vendor preset: disabled)
+   Active: active (running) since Sun 2018-08-19 12:27:24 UTC; 18min ago
+     Docs: man:httpd(8)
+           man:apachectl(8)
+ Main PID: 4828 (httpd)
+   CGroup: /system.slice/system-httpd.slice/httpd@httpd.service
+           ├─4828 /usr/sbin/httpd -f /etc/httpd/conf/httpd.conf -DFOREGROUND
+           ├─4831 /usr/sbin/httpd -f /etc/httpd/conf/httpd.conf -DFOREGROUND
+           ├─4832 /usr/sbin/httpd -f /etc/httpd/conf/httpd.conf -DFOREGROUND
+           ├─4833 /usr/sbin/httpd -f /etc/httpd/conf/httpd.conf -DFOREGROUND
+           ├─4834 /usr/sbin/httpd -f /etc/httpd/conf/httpd.conf -DFOREGROUND
+           └─4835 /usr/sbin/httpd -f /etc/httpd/conf/httpd.conf -DFOREGROUND
+
+Aug 19 12:27:24 otuslinux systemd[1]: Started The Apache HTTP Server httpd.
+Aug 19 12:27:24 otuslinux systemd[1]: Starting The Apache HTTP Server httpd...
+
+
+● httpd@httpd2.service - The Apache HTTP Server httpd2
+   Loaded: loaded (/usr/lib/systemd/system/httpd@.service; enabled; vendor preset: disabled)
+   Active: active (running) since Sun 2018-08-19 12:35:49 UTC; 10min ago
+     Docs: man:httpd(8)
+           man:apachectl(8)
+  Process: 5263 ExecStop=/bin/kill -WINCH ${MAINPID} (code=exited, status=0/SUCCESS)
+ Main PID: 5267 (httpd)
+   CGroup: /system.slice/system-httpd.slice/httpd@httpd2.service
+           ├─5267 /usr/sbin/httpd -f /etc/httpd/conf/httpd2.conf -DFOREGROUND
+           ├─5268 /usr/sbin/httpd -f /etc/httpd/conf/httpd2.conf -DFOREGROUND
+           ├─5269 /usr/sbin/httpd -f /etc/httpd/conf/httpd2.conf -DFOREGROUND
+           ├─5270 /usr/sbin/httpd -f /etc/httpd/conf/httpd2.conf -DFOREGROUND
+           ├─5271 /usr/sbin/httpd -f /etc/httpd/conf/httpd2.conf -DFOREGROUND
+           └─5272 /usr/sbin/httpd -f /etc/httpd/conf/httpd2.conf -DFOREGROUND
+
+Aug 19 12:35:49 otuslinux systemd[1]: Started The Apache HTTP Server httpd2.
+Aug 19 12:35:49 otuslinux systemd[1]: Starting The Apache HTTP Server httpd2...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
